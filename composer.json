@@ -33,14 +33,14 @@
     "source": "https://github.com/ProklUng/bitrix-webprofilier-module"
   },
   "extra": {
-    "installer-name": "proklung.notifier"
+    "installer-name": "proklung.profilier"
   },
   "require": {
     "php": ">=7.1 || ^8.0",
     "composer/installers": "~1",
     "proklung/bitrix-containerable-boilerplate": "^1.1",
     "proklung/bitrix.module.boilerplate": "^1.0",
-    "proklung/web-profilier-bundle": "^1.0"
+    "proklung/web-profilier-bundle": "^1.0",
   },
   "require-dev": {
     "icanhazstring/composer-unused": "^0.7.5"
