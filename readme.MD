@@ -55,6 +55,8 @@ $ composer require proklung/bitrix-webprofilier-module
 use Bitrix\Main\Loader;
 
 Loader::includeModule('proklung.profilier');
+
+\Proklung\Profilier\DI\Services::init();
 ```
 
 ## Конфигурирование
