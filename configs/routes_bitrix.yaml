@@ -1,0 +1,7 @@
+_profiler:
+  path: /_profiler_bitrix/
+  controller: 'Prokl\WebProfilierBundle\Controller\ProfilerAdminController::action'
+
+_profiler_clear:
+  path: /_profiler_bitrix/clear/
+  controller: 'Prokl\WebProfilierBundle\Controller\EraserDataController::action'

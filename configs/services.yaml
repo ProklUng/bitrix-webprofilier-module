@@ -1,0 +1,130 @@
+parameters:
+  # Шаблон страницы админа.
+  admin_profiler_page_template: './profiler/layout.html.twig'
+  profiler_twig_templates_path: '%kernel.project_dir%/vendor/proklung/web-profilier-bundle/src/Bundle/Resources/view'
+
+  profiler_listener.only_master_requests: true
+  profiler_listener.only_exceptions: false
+  profiler_listener.collect: true
+  profiler.storage.dsn: 'file:%kernel.cache_dir%/profiler'
+  ignoring_url: ['/bitrix/admin', 'public_session.php', 'spread.php', '/_profiler', '/_profilier']
+
+services:
+  # конфигурация по умолчанию в *этом* файле
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  Prokl\WebProfilierBundle\Twig\TwigProfilerExtension:
+    class: Prokl\WebProfilierBundle\Twig\TwigProfilerExtension
+    arguments: ['@Symfony\Component\VarDumper\Dumper\HtmlDumper']
+    tags:
+      - { name: twig.extension }
+
+  transformers.bag:
+    class: Prokl\WebProfilierBundle\Extractor\DataCollectorTransformerBag
+    arguments: [!tagged_locator { tag: 'web_profiler.transformer', index_by: 'key' }]
+
+  #############
+  # Controllers
+  #############
+
+  Prokl\WebProfilierBundle\Controller\ProfilerAdminController:
+    class: Prokl\WebProfilierBundle\Controller\ProfilerAdminController
+    arguments:
+      - '@twig.instance'
+      - '@Prokl\WebProfilierBundle\Contract\DataFileHandlerInterface'
+      - '@profile_extractor'
+      - '@bitrix.user'
+      - '%admin_profiler_page_template%'
+      - '%profiler_cache_path%'
+
+  Prokl\WebProfilierBundle\Controller\ProfilerController:
+    class: Prokl\WebProfilierBundle\Controller\ProfilerController
+    arguments:
+      - '@bitrix.user'
+      - '@profiler'
+
+  # Обработка данных в самом конце исполнения страницы
+  Prokl\WebProfilierBundle\Events\DataCollectingEventHandler:
+    class: Prokl\WebProfilierBundle\Events\DataCollectingEventHandler
+    arguments:
+      - '@profiler'
+      - '@Prokl\WebProfilierBundle\Utils\ProfilerGuard'
+      - '@profile_extractor'
+      - '@Prokl\WebProfilierBundle\Contract\DataFileHandlerInterface'
+
+  Prokl\WebProfilierBundle\Events\BitrixOnBeforePrologHandler:
+    class: Prokl\WebProfilierBundle\Events\BitrixOnBeforePrologHandler
+    arguments:
+      - '@profiler'
+
+  Prokl\WebProfilierBundle\Events\BitrixAddButtonMenu:
+    class: Prokl\WebProfilierBundle\Events\BitrixAddButtonMenu
+    arguments:
+      - '@profiler'
+      - '/bitrix/admin/_profilier_render_token.php'
+      - 'bitrix-profilier-module'
+
+  # Кастомное событие, чтобы проставить заголовки
+  Prokl\WebProfilierBundle\Events\BitrixAfterHandleRequestListener:
+    class: Prokl\WebProfilierBundle\Events\BitrixAfterHandleRequestListener
+    arguments: ['@Prokl\WebProfilierBundle\Utils\ProfilerGuard', '%ignoring_url%']
+    tags:
+      - { name: kernel.event_listener, event: kernel.after_handle_request, method: handle, priority: 1 }
+
+  # Очистка json файла профайлера.
+  profilier_data_eraser:
+    class: Prokl\WebProfilierBundle\EraserData
+    arguments:
+      - '@Prokl\WebProfilierBundle\Contract\UniqualizatorProfileDataInterface'
+      - '%profiler_cache_path%'
+
+  #############
+  # Controllers
+  #############
+
+  Prokl\WebProfilierBundle\Controller\EraserDataController:
+    class: Prokl\WebProfilierBundle\Controller\EraserDataController
+    arguments: ['@profilier_data_eraser']
+
+  ########
+  # Utils
+  ########
+
+  bitrix.user:
+    public: false
+    class: CUser
+
+  profile_extractor:
+    class: Prokl\WebProfilierBundle\Extractor\ProfileExtractor
+    arguments:
+      - '@profiler'
+      - '@transformers.bag'
+
+  Prokl\WebProfilierBundle\Utils\ProfilerGuard:
+    class: Prokl\WebProfilierBundle\Utils\ProfilerGuard
+    arguments:
+      - '%kernel.environment%'
+
+  Proklung\Profilier\DI\FactoryClosure: ~
+
+  data_file_storage_uniqualizator:
+    class: Prokl\WebProfilierBundle\Bitrix\BitrixUniqualizatorProfileData
+
+  Prokl\WebProfilierBundle\Contract\UniqualizatorProfileDataInterface: '@data_file_storage_uniqualizator'
+
+  profilier_data_file_handler:
+    class: Prokl\WebProfilierBundle\Utils\DataFileHandler
+    arguments:
+      - '@Prokl\WebProfilierBundle\Contract\UniqualizatorProfileDataInterface'
+      - '%profiler_cache_path%'
+
+  Prokl\WebProfilierBundle\Contract\DataFileHandlerInterface: '@profilier_data_file_handler'
+
+  Prokl\WebProfilierBundle\Events\ProfileListenerDecorator:
+    decorates: profiler_listener
+    arguments: ['@.inner', '%ignoring_url%']
+    tags:
+      - { name: kernel.event_subscriber }

@@ -1,0 +1,34 @@
+#######
+# Twig
+#######
+
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  # Twig loader
+  twig.loader:
+    class: Twig\Loader\FilesystemLoader
+    arguments:
+      - '%twig_paths%'
+
+  # Twig
+  twig:
+    class: Proklung\Profilier\Twig\TwigInitializer
+    arguments:
+      - '@twig.loader'
+      - '%kernel.debug%'
+      - '%twig_cache_dir%'
+      - '%twig_config%'
+
+  # Экземпляр Twig.
+  twig.instance:
+    class: Twig\Environment
+    factory: ['@twig', 'instance']
+
+  csa_guzzle.twig.extension:
+    class: Prokl\GuzzleBundle\Twig\Extension\GuzzleExtension
+    tags:
+      - { name: twig.extension }

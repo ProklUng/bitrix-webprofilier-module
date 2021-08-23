@@ -1,0 +1,26 @@
+services:
+  # конфигурация по умолчанию в *этом* файле
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  Proklung\Profilier\Transformers\ModuleDataCollectorTransformer:
+    tags:
+      - { name: web_profiler.transformer, key: 'module_collector' }
+
+  Prokl\WebProfilierBundle\Transformers\RequestDataDataCollectorTransformer:
+    tags:
+      - { name: web_profiler.transformer, key: 'request' }
+
+  Prokl\WebProfilierBundle\Transformers\ConfigDataCollectorTransformer:
+    tags:
+      - { name: web_profiler.transformer, key: 'config' }
+
+  Prokl\WebProfilierBundle\Transformers\JsonResponseDataCollectorTransformer:
+    tags:
+      - { name: web_profiler.transformer, key: 'json_response' }
+
+  Prokl\WebProfilierBundle\Transformers\GuzzleDataCollectorTransformer:
+    tags:
+      - { name: web_profiler.transformer, key: 'guzzle' }

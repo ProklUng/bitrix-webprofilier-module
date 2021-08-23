@@ -1,0 +1,4 @@
+<?php
+
+$MESS['PROFILIER_MODULE_MENU_TITLE'] = 'Меню';
+$MESS['PROFILIER_MODULE_SUBMENU_TITLE'] = 'Подменю';

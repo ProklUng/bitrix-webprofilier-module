@@ -1,0 +1,11 @@
+services:
+  # конфигурация по умолчанию в *этом* файле
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  Prokl\WebProfilierBundle\DataCollector\JsonResponseDataCollector:
+    class: Prokl\WebProfilierBundle\DataCollector\JsonResponseDataCollector
+    tags:
+      - { name: data_collector, id: json_response, template: '/collectors/json_response.html.twig', priority: 336}
