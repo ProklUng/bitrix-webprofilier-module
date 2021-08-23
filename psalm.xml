@@ -21,9 +21,6 @@
         </ignoreFiles>
     </projectFiles>
 
-    <extraFiles>
-        <directory name="vendor/sheerockoff/bitrix-ci/files/bitrix"/>
-    </extraFiles>
     <issueHandlers>
         <InvalidCatch>
             <errorLevel type="suppress">
