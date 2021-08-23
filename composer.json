@@ -29,8 +29,8 @@
   ],
 
   "support": {
-    "issues": "https://github.com/ProklUng/bitrix.webprofilier.module/issues",
-    "source": "https://github.com/ProklUng/bitrix.webprofilier.module"
+    "issues": "https://github.com/ProklUng/bitrix-webprofilier-module/issues",
+    "source": "https://github.com/ProklUng/bitrix-webprofilier-module"
   },
   "extra": {
     "installer-name": "proklung.notifier"
