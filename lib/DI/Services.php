@@ -25,10 +25,12 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
+use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Twig_Environment;
 
@@ -229,6 +231,17 @@ class Services extends AbstractServiceContainer
         }
 
         $this->processConfigDataCollectors(static::$container, $this->collectors);
+
+        $registerListenersPass = new RegisterListenersPass();
+        $registerListenersPass->setHotPathEvents([
+            KernelEvents::REQUEST,
+            KernelEvents::CONTROLLER,
+            KernelEvents::CONTROLLER_ARGUMENTS,
+            KernelEvents::RESPONSE,
+            KernelEvents::FINISH_REQUEST,
+        ]);
+
+        static::$container->addCompilerPass($registerListenersPass);
 
         $this->setupAutowiring(static::$container);
 

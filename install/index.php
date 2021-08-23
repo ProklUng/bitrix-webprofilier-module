@@ -48,6 +48,10 @@ class proklung_profilier extends CModule
             => '/bitrix/admin/_profilier_render_token.php',
             '/bitrix/modules/proklung.profilier/install/admin/symfony.png'
             => '/bitrix/images/symfony.png',
+            '/bitrix/modules/proklung.profilier/install/admin/assets/bootstrap.bundle.min.js'
+            => '/bitrix/admin/bootstrap.bundle.min.js',
+            '/bitrix/modules/proklung.profilier/install/admin/assets/bootstrap.min.css'
+            => '/bitrix/admin/bootstrap.min.css',
         ];
         
         $this->moduleManager = new Module(
