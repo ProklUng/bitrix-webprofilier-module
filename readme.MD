@@ -3,7 +3,8 @@
 На базе [бандла](https://github.com/ProklUng/web.profilier.bundle), но самодостаточен, ни в чем снаружи - кроме зависимостей из 
 composer.json - не нуждается.
 
-Представляет собой творческую адаптацию фирменного [бандла](https://github.com/symfony/web-profiler-bundle)
+Представляет собой досуговую адаптацию фирменного [бандла](https://github.com/symfony/web-profiler-bundle) на фоне решения
+ частной задачи.
 
 ## Установка
 
