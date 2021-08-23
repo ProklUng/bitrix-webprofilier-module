@@ -49,6 +49,13 @@ $ composer require proklung/bitrix-webprofilier-module
 Установите модуль `proklung.profilier` в административном интерфейсе сайта `bitrix/admin/partner_modules.php`
 
 Поставить галочку `Активность` на странице `/bitrix/admin/_profiler_bitrix.php` (или в админке по пути `Контент` -> `Битрикс профайлер`).
+Загрузить модуль в `init.php`:
+
+```php
+use Bitrix\Main\Loader;
+
+Loader::includeModule('proklung.profilier');
+```
 
 ## Конфигурирование
 
