@@ -5,9 +5,9 @@ services:
     autoconfigure: true
     public: true
 
-  Proklung\Profilier\Transformers\ModuleDataCollectorTransformer:
-    tags:
-      - { name: web_profiler.transformer, key: 'module_collector' }
+#  Proklung\Profilier\Transformers\ModuleDataCollectorTransformer:
+#    tags:
+#      - { name: web_profiler.transformer, key: 'module_collector' }
 
   Prokl\WebProfilierBundle\Transformers\RequestDataDataCollectorTransformer:
     tags:
