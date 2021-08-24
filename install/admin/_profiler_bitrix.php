@@ -13,6 +13,7 @@ Loader::includeModule('proklung.profilier');
 try {
     $module = Module::getModuleInstance('proklung.profilier');
 } catch (\LogicException $e) {
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/proklung.profilier/install/index.php';
     new proklung_profilier();
     $module = Module::getModuleInstance('proklung.profilier');
 }
