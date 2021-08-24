@@ -58,9 +58,9 @@ $ composer require proklung/bitrix-webprofilier-module
 ```php
 use Bitrix\Main\Loader;
 
-Loader::includeModule('proklung.profilier');
-
-\Proklung\Profilier\DI\Services::init();
+if (Loader::includeModule('proklung.profilier')) {
+    \Proklung\Profilier\DI\Services::init();
+}
 ```
 
 ## Конфигурирование
@@ -102,7 +102,7 @@ Loader::includeModule('proklung.profilier');
     ],
 
 
-Параметр `cache_path` - путь, куда ляжет скомпилированный контейнер. Если не задано, то по умолчанию `/bitrix/cache/s1/proklung.rabbitmq`.
+Параметр `cache_path` - путь, куда ляжет скомпилированный контейнер. Если не задано, то по умолчанию `/bitrix/cache/s1/proklung.profilier`.
 
 Предполагается, что в системе так или иначе установлена переменная среды `DEBUG` в массиве `$_ENV`. Если нет, то по умолчанию
  полагается, что среда "отладочная".
@@ -120,3 +120,4 @@ Loader::includeModule('proklung.profilier');
 1) ***Профайлер текущего запроса*** - ссылка на профайлер с данными на текущую открытую страницу.
 2) ***Профайлер последнего запроса*** - ссылка на профайлер с данными на последний запрос. Отличие от первой кнопки в том,
    что можно сделать в другой вкладке открыть страницу, возвращающую, скажем json, и посмотреть ее профайл.
+3) Еще ссылки: `/bitrix/admin/_profilier_module.php`
