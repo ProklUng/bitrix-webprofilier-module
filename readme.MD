@@ -89,21 +89,29 @@ if (Loader::includeModule('proklung.profilier')) {
             'bundles' => [],
              // Дополнительные data collectors
             'collectors' => [
-                // Название сервиса    
+                // ID сервиса  
                 'fooCollector' => [
                     // Класс, объект или замыкание, возвращающее готовый объект
                     'className' => 'Proklung\Profilier\DataCollector\ModuleDataCollector',
-                    'id' => 'module_collector',
+                    'id' => 'module_collector', // Должно соответствовать тому, что возвращает getName
                     'template' => '/collectors/module.html.twig',
                     'priority' => 336
-                ]
+                ],
+                // ID сервиса
+                'metrics' => [
+                    // Класс, объект или замыкание, возвращающее готовый объект
+                    'className' => 'Prokl\WebProfilierBundle\Bitrix\Metric\MetrixDataCollector',
+                    'id' => 'metrics',
+                    'template' => '/collectors/metrics.html.twig',
+                    'priority' => 336
+                ],
             ],
             'transformers' => [
-                // Название сервиса
-                'fooCollectorTransformer' => [
+                // ID сервиса
+                'metricsTransformer' => [
                     // Класс, объект или замыкание, возвращающее готовый объект
-                    'className' => 'Local\Services\Metric\UnsentMailEventsDataCollectorTransformerTransformer',
-                    'key' => 'module_collector',
+                    'className' => 'Prokl\WebProfilierBundle\Bitrix\Metric\MetricsDataCollectorTransformer',
+                    'key' => 'metrics',
                 ],
             ]
         ],
