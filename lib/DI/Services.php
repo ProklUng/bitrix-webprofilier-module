@@ -88,6 +88,11 @@ class Services extends AbstractServiceContainer
     private $collectors;
 
     /**
+     * @var array $transformers Трансформеры.
+     */
+    private $transformers;
+
+    /**
      * Services constructor.
      */
     public function __construct()
@@ -100,6 +105,7 @@ class Services extends AbstractServiceContainer
         $this->twigConfig = $this->config['twig'] ?? [];
         $this->bundles = $this->config['bundles'] ?? [];
         $this->collectors = $this->config['collectors'] ?? [];
+        $this->transformers = $this->config['transformers'] ?? [];
 
         // Инициализация параметров контейнера.
         $this->parameters['cache_path'] = $this->config['parameters']['cache_path'] ?? '/bitrix/cache/proklung.profilier';
@@ -116,7 +122,7 @@ class Services extends AbstractServiceContainer
      * @return void
      * @throws ArgumentNullException | Exception
      */
-    public static function init() : void
+    public static function init(): void
     {
         if (static::$loaded) {
             return;
@@ -137,6 +143,7 @@ class Services extends AbstractServiceContainer
         foreach ($ignoringUrls as $ignoringUrl) {
             if (stripos($url, $ignoringUrl) !== false) {
                 static::$loaded = true;
+
                 return;
             }
         }
@@ -178,16 +185,16 @@ class Services extends AbstractServiceContainer
      * @return void
      * @throws Exception
      */
-    public function initContainer() : void
+    public function initContainer(): void
     {
         static::$container->setParameter('mailer_enabled', false);
         static::$container->setParameter('kernel.container_class', 'ProfilierContainer');
 
         static::$container->setParameter('data_collector.templates', []);
-        static::$container->setParameter('cache_path', $_SERVER['DOCUMENT_ROOT'] . $this->parameters['cache_path']);
+        static::$container->setParameter('cache_path', $_SERVER['DOCUMENT_ROOT'].$this->parameters['cache_path']);
         static::$container->setParameter(
             'profiler_cache_path',
-            $_SERVER['DOCUMENT_ROOT'] . $this->parameters['cache_path'] . '/module_profilier'
+            $_SERVER['DOCUMENT_ROOT'].$this->parameters['cache_path'].'/module_profilier'
         );
 
         $loaderBundles = new LoaderBundles(
@@ -197,8 +204,8 @@ class Services extends AbstractServiceContainer
 
         $loaderBundles->fromArray($this->bundles);
 
-        $loaderYaml = new YamlFileLoader(static::$container, new FileLocator(__DIR__ . '/../../configs'));
-        $loader = new PhpFileLoader(static::$container, new FileLocator(__DIR__ . '/../../configs'));
+        $loaderYaml = new YamlFileLoader(static::$container, new FileLocator(__DIR__.'/../../configs'));
+        $loader = new PhpFileLoader(static::$container, new FileLocator(__DIR__.'/../../configs'));
 
         $loaderYaml->load('base.yaml');
         $loader->load('services.php');
@@ -230,7 +237,31 @@ class Services extends AbstractServiceContainer
             static::$container->setAlias(Stopwatch::class, new Alias('debug.stopwatch', false));
         }
 
-        $this->processConfigDataCollectors(static::$container, $this->collectors);
+        // Регистрация сервисов data collector
+        $this->processConfigServices(
+            static::$container,
+            'data_collector',
+            $this->collectors,
+            function ($item) {
+                return [
+                    'id' => $item['string'],
+                    'template' => $item['template'],
+                    'priority' => $item['priority'],
+                ];
+            }
+        );
+
+        // Регистрация сервисов data collector transformer
+        $this->processConfigServices(
+            static::$container,
+            'web_profiler.transformer',
+            $this->transformers,
+            function ($item) {
+                return [
+                    'key' => $item['key'],
+                ];
+            }
+        );
 
         $registerListenersPass = new RegisterListenersPass();
         $registerListenersPass->setHotPathEvents([
@@ -255,15 +286,12 @@ class Services extends AbstractServiceContainer
         static::$container->compile(true);
     }
 
-    /**
-     * Обработка data collectors из конфига.
-     *
-     * @param ContainerBuilder $containerBuilder Контейнер.
-     * @param array            $config           Конфиг.
-     *
-     * @return void
-     */
-    private function processConfigDataCollectors(ContainerBuilder $containerBuilder, array $config) : void
+    private function processConfigServices(
+        ContainerBuilder $containerBuilder,
+        string $tag,
+        array $config,
+        callable $processor
+    ) : void
     {
         if (count($config) === 0) {
             return;
@@ -281,11 +309,7 @@ class Services extends AbstractServiceContainer
                     new Definition($item['className'])
                 )->setPublic(true);
 
-                $definition->addTag('data_collector', [
-                    'id' => $item['string'],
-                    'template' => $item['template'],
-                    'priority' => $item['priority'],
-                ]);
+                $definition->addTag($tag, $processor($item));
             }
 
             if (is_callable($item['className'])) {
@@ -304,7 +328,7 @@ class Services extends AbstractServiceContainer
      *
      * @return void
      */
-    private function setupAutowiring(ContainerBuilder $container) : void
+    private function setupAutowiring(ContainerBuilder $container): void
     {
     }
 

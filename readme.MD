@@ -97,6 +97,14 @@ if (Loader::includeModule('proklung.profilier')) {
                     'template' => '/collectors/module.html.twig',
                     'priority' => 336
                 ]
+            ],
+            'transformers' => [
+                // Название сервиса
+                'fooCollectorTransformer' => [
+                    // Класс, объект или замыкание, возвращающее готовый объект
+                    'className' => 'Local\Services\Metric\UnsentMailEventsDataCollectorTransformerTransformer',
+                    'key' => 'module_collector',
+                ],
             ]
         ],
     ],
